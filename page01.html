@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Tema Escuro</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* ============================ */
+        /* === ESTILOS GERAIS (TEMA ESCURO) === */
+        /* ============================ */
+        body {
+            /* (MELHORIA) Usando a fonte Roboto */
+            font-family: 'Roboto', sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            display: grid;
+            place-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .login-container {
+            background-color: #1e1e1e;
+            padding: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+
+        /* ============================ */
+        /* === O RELÓGIO DETALHADO === */
+        /* ============================ */
+        .clock-container {
+            margin-bottom: 2rem;
+            /* (MELHORIA) Torna o contêiner clicável */
+            cursor: pointer; 
+            user-select: none; /* Impede seleção de texto */
+        }
+        
+        .clock {
+            width: 150px;
+            height: 150px;
+            border: 8px solid #f0f0f0;
+            border-radius: 50%;
+            margin: 0 auto 1rem auto; /* Adiciona margem inferior */
+            position: relative;
+            background-color: #1e1e1e;
+        }
+
+        .clock-mark {
+            position: absolute;
+            top: 0;
+            left: calc(50% - 1.5px);
+            width: 3px;
+            height: 100%;
+            transform-origin: center;
+        }
+        
+        .clock-mark::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 8px;
+            background-color: #888;
+        }
+
+        .clock-mark:nth-child(3n)::before {
+            width: 4px;
+            height: 15px;
+            background-color: #e0e0e0;
+        }
+
+        .clock-mark:nth-child(1)  { transform: rotate(30deg); }
+        .clock-mark:nth-child(2)  { transform: rotate(60deg); }
+        .clock-mark:nth-child(3)  { transform: rotate(90deg); }
+        .clock-mark:nth-child(4)  { transform: rotate(120deg); }
+        .clock-mark:nth-child(5)  { transform: rotate(150deg); }
+        .clock-mark:nth-child(6)  { transform: rotate(180deg); }
+        .clock-mark:nth-child(7)  { transform: rotate(210deg); }
+        .clock-mark:nth-child(8)  { transform: rotate(240deg); }
+        .clock-mark:nth-child(9)  { transform: rotate(270deg); }
+        .clock-mark:nth-child(10) { transform: rotate(300deg); }
+        .clock-mark:nth-child(11) { transform: rotate(330deg); }
+        .clock-mark:nth-child(12) { transform: rotate(360deg); }
+
+        .clock::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+
+        .hand {
+            width: 50%;
+            height: 4px;
+            background: #f0f0f0;
+            position: absolute;
+            top: 50%;
+            transform-origin: 100%;
+            transform: translateY(-50%) rotate(90deg);
+            z-index: 9;
+            /* (MELHORIA) Transição suave ao MUDAR FUSO */
+            transition: transform 0.5s ease-out;
+        }
+
+        .hour-hand { width: 35%; left: 15%; height: 6px; }
+        .minute-hand { width: 45%; left: 5%; height: 4px; }
+        .second-hand { 
+            width: 48%; 
+            left: 2%; 
+            height: 2px; 
+            background: #e74c3c;
+            /* (MELHORIA) Remove transição do segundo para o JS controlar */
+            transition: none; 
+        }
+
+        #timezone-display {
+            font-size: 0.9rem;
+            color: #aaa;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .clock-container:hover #timezone-display {
+            color: #007bff; /* Destaque no hover */
+        }
+
+        /* ============================ */
+        /* === FORMULÁRIO (TEMA ESCURO) === */
+        /* ============================ */
+        .login-header h1 {
+            font-size: 1.5rem;
+            color: #007bff;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .login-header p {
+            font-size: 1rem;
+            color: #e0e0e0;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+            /* (MELHORIA) Necessário para posicionar o ícone da senha */
+            position: relative; 
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #bbb;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #444;
+            background-color: #2a2a2a;
+            color: #fff;
+            border-radius: 4px;
+            box-sizing: border-box;
+            /* (MELHORIA) Transição suave no foco */
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        /* (MELHORIA) Destaque visual ao focar no input */
+        .form-group input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+        }
+        
+        /* (MELHORIA) Estilo do ícone de ver/ocultar senha */
+        #toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 70%; /* Ajusta na linha do input */
+            transform: translateY(-50%);
+            color: #888;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        #toggle-password:hover {
+            color: #fff;
+        }
+        /* (MELHORIA) Ajuste no padding do input de senha para não sobrepor o ícone */
+        input[type="password"], input[type="text"] {
+             padding-right: 2.5rem; /* Espaço para o ícone */
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 0.9rem;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-submit:hover {
+            background-color: #0056b3;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: #777;
+            margin: 2rem 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #444;
+        }
+
+        .divider:not(:empty)::before { margin-right: .5em; }
+        .divider:not(:empty)::after { margin-left: .5em; }
+
+        .social-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn-social {
+            flex: 1;
+            padding: 0.8rem;
+            border-radius: 4px;
+            border: 1px solid #444;
+            background-color: #2a2a2a;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .btn-social:hover {
+            background-color: #333;
+            border-color: #555;
+        }
+
+        .fa-google { color: #DB4437; }
+        .fa-facebook-f { color: #4267B2; }
+
+        .create-account {
+            margin-top: 2rem;
+        }
+
+        .create-account a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .create-account a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+
+        <div class="clock-container" id="clock-trigger">
+            <div class="clock">
+                <div class="clock-mark"></div>
+                <div class="clock-mark"></div>
+                <div class="clock-mark"></div>
+                <div class="clock-mark"></div>
+                <div class="clock-mark"></div>
+                <div class="clock-mark"></div>
+                <div class="clock-mark"></div>
+                <div class="clock-mark"></div>
+                <div class="clock-mark"></div>
+                <div class="clock-mark"></div>
+                <div class="clock-mark"></div>
+                <div class="clock-mark"></div>
+                
+                <div class="hand hour-hand" id="hour-hand"></div>
+                <div class="hand minute-hand" id="minute-hand"></div>
+                <div class="hand second-hand" id="second-hand"></div>
+            </div>
+            <div id="timezone-display">Carregando...</div>
+        </div>
+
+        <div class="login-header">
+            <h1>Login</h1>
+        </div>
+
+        <form action="#" method="POST" onsubmit="return false;">
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" name="email" placeholder="Digite seu e-mail" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
+                <i class="fas fa-eye" id="toggle-password"></i>
+            </div>
+            
+            <button type="submit" class="btn-submit">Continuar</button>
+        </form>
+
+        <div class="divider">Ou escolha uma opção:</div>
+
+        <div class="social-buttons">
+            <button class="btn-social" aria-label="Entrar com Google">
+                <i class="fab fa-google"></i>
+            </button>
+            <button class="btn-social" aria-label="Entrar com Facebook">
+                <i class="fab fa-facebook-f"></i>
+            </button>
+        </div>
+
+        <div class="create-account">
+            <p>Não tem conta? <a href="#">Criar conta grátis</a></p>
+        </div>
+    </div>
+
+    <script>
+        // --- LÓGICA DO RELÓGIO MUNDIAL ---
+
+        // Definição da lista de fusos horários
+        const timezones = [
+            { id: 'America/Sao_Paulo', name: 'Horário de São Paulo' },
+            { id: 'Europe/London', name: 'Horário de Londres' },
+            { id: 'Asia/Tokyo', name: 'Horário de Tóquio' },
+            { id: 'America/New_York', name: 'Horário de Nova York' },
+            { id: 'Australia/Sydney', name: 'Horário de Sydney' },
+            { id: 'Europe/Paris', name: 'Horário de Paris' },
+            { id: 'Asia/Dubai', name: 'Horário de Dubai' },
+            { id: 'America/Los_Angeles', name: 'Horário de Los Angeles' }
+        ];
+        
+        // Variável: índice do fuso horário
+        let currentTzIndex = 0;
+
+        // Seleção dos elementos do relógio
+        const hourHand = document.getElementById('hour-hand');
+        const minuteHand = document.getElementById('minute-hand');
+        const secondHand = document.getElementById('second-hand');
+        const timezoneDisplay = document.getElementById('timezone-display');
+        const clockTrigger = document.getElementById('clock-trigger');
+
+        /**
+         * Função para atualizar a posição dos ponteiros
+         */
+        function updateClock() {
+            // Pega o fuso horário atual
+            const tz = timezones[currentTzIndex].id;
+            const now = new Date();
+            let parts;
+
+            try {
+                // Formata a data para o fuso específico
+                const formatter = new Intl.DateTimeFormat('en-US', {
+                    timeZone: tz,
+                    hour12: false,
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    second: 'numeric',
+                    millisecond: 'numeric' // (MELHORIA) Pega os milissegundos
+                });
+                parts = formatter.formatToParts(now);
+            } catch (e) {
+                console.error("Fuso horário inválido:", tz, e);
+                return;
+            }
+            
+            // Extrai os valores de tempo
+            const getPart = (type) => parseInt(parts.find(p => p.type === type)?.value || 0, 10);
+            
+            // (MELHORIA) Cálculo suave dos segundos usando milissegundos
+            const ms = getPart('millisecond');
+            const seconds = getPart('second') + (ms / 1000); 
+            
+            const minutes = getPart('minute');
+            const hours = getPart('hour');
+
+            // Cálculo dos graus para cada ponteiro
+            const secondsDeg = (seconds / 60) * 360 + 90;
+            const minutesDeg = (minutes / 60) * 360 + (seconds / 60) * 6 + 90;
+            const hoursDeg = (hours / 12) * 360 + (minutes / 60) * 30 + 90;
+
+            // Aplicação da rotação
+            secondHand.style.transform = `translateY(-50%) rotate(${secondsDeg}deg)`;
+            minuteHand.style.transform = `translateY(-50%) rotate(${minutesDeg}deg)`;
+            hourHand.style.transform = `translateY(-50%) rotate(${hoursDeg}deg)`;
+        }
+
+        /**
+         * (MELHORIA) Função para mudar para o PRÓXIMO fuso
+         */
+        function changeToNextTimezone() {
+            // Avança o índice (dando a volta na lista se chegar ao fim)
+            currentTzIndex = (currentTzIndex + 1) % timezones.length;
+            
+            // Atualiza o texto do mostrador
+            timezoneDisplay.textContent = timezones[currentTzIndex].name;
+            
+            // Atualiza o relógio (a transição do CSS vai suavizar a mudança)
+            updateClock();
+        }
+
+        /**
+         * Configuração do fuso inicial
+         */
+        function setInitialTimezone() {
+            currentTzIndex = 0;
+            timezoneDisplay.textContent = timezones[currentTzIndex].name;
+        }
+
+        // --- LÓGICA DO FORMULÁRIO ---
+
+        /**
+         * Função para ver/ocultar senha
+         */
+        function setupPasswordToggle() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggle-password');
+
+            toggleIcon.addEventListener('click', function() {
+                // Verifica o tipo atual do input
+                const isPassword = passwordInput.type === 'password';
+                
+                // Troca o tipo
+                passwordInput.type = isPassword ? 'text' : 'password';
+                
+                // Troca o ícone
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+        }
+
+        // --- INICIALIZAÇÃO ---
+
+        // 1. Configura o fuso inicial
+        setInitialTimezone();
+
+        // 2. Roda o updateClock em alta frequência (aprox. 60fps)
+        function animateClock() {
+            updateClock();
+            requestAnimationFrame(animateClock);
+        }
+        animateClock();
+
+        // 3. Clique para trocar fuso no relógio
+        clockTrigger.addEventListener('click', changeToNextTimezone);
+
+        // 4. Função de ver/ocultar senha
+        setupPasswordToggle();
+
+    </script>
+
+</body>
+</html>
